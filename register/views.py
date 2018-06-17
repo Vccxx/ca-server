@@ -44,7 +44,6 @@ def register(request):
     try:
         c.save()
     except Exception,e:
-        print e.message
         if "UNIQUE constraint failed: register_cert.PublicKey" == e.message: 
             return HttpResponse(response_info(error_mToc["ERR_CHECK_INFO"],"PublicKey Corruption! Please Gen a new key."))
         elif "UNIQUE constraint failed: register_cert.SerialNumber" == e.message:
