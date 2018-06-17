@@ -1,0 +1,1 @@
+http://127.0.0.1:8000/register/?SerialNumber=1&&Subject=Amy&&PublicKey=testkey&&PublicKeyAlgorithm=test_algorithm&&Fingerprint=test_fp&&FingerprintAlgorithm=test_fa&&ValidTo=2018-04-22&&originSignature=sign&&SignatureAlgorithm=signA
