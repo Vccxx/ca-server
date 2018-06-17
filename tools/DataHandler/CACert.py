@@ -8,7 +8,7 @@ def get_ca_cert():
     result = {}
     if os.path.exists(file_path+"/cacert"):
         with open(file_path+"/cacert","r") as f:
-            for line in f.read():
+            for line in f.readlines():
                 result[line.split(":")[0]] =line.split(":")[1]
         return json.dumps(result)
     else:
