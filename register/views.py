@@ -10,7 +10,7 @@ from tools.DataHandler.DataDefine import error_mToc
 from register.models import Cert
 from tools.DataHandler.Validate import *
 from tools.DataHandler.Gen import *
-from tools.DataHandler.Validate import is_validate
+from tools.DataHandler.Validate import is_validate,is_validate_subject
 from tools.DataHandler.CACert import get_ca_cert
 import datetime
 from tools.DataHandler.DataDefine import Certification
@@ -54,8 +54,8 @@ def register(request):
                 "Subject":sName,
                 "PublicKey":pub,
                 "PublicKeyAlgorithm":pub,
-                "FingerPrint":fig,
-                "FingerPrintAlgorithm":figA,
+                "Fingerprint":fig,
+                "FingerprintAlgorithm":figA,
                 "ValidTo":validTime,
                 "Signature":sign,
                 "Signature_Algorithm":signA
@@ -65,7 +65,49 @@ def register(request):
     return HttpResponse(response_info(error_mToc["SUCCESS"],data))
 
 def update(request):
-    return HttpResponse(response_info(error_mToc["SUCCESS"],"update success"))
+    sName = request.GET.get("Subject")
+    for i in range(len(Cert.objects.all())):
+        if Cert.objects.all()[i].Subject == sName:
+            return register(request) 
+    return HttpResponse(response_info(error_mToc["ERR_UPDATE"],"You need to regist first."))
 
 def revoke(request):
-    return HttpResponse(response_info(error_mToc["SUCCESS"],"revoke success"))
+    sName = request.GET.get("Subject")
+    if not is_validate_subject(sName):
+        return HttpResponse(response_info(error_mToc["ERR_REVOKE"],"Invalid Subject,You are not allowed to revoke."))
+    for i in range(len(Cert.objects.all())):
+        if Cert.objects.all()[i].Subject == sName:
+            try:
+                Cert.objects.get(Subject = sName).delete()
+            except Exception,e:
+                return HttpResponse(response_info(error_mToc["ERR_REVOKE"],e.message))
+            return HttpResponse(response_info(error_mToc["SUCCESS"],"Revoke Success!"))
+    return HttpResponse(response_info(error_mToc["ERR_REVOKE"],"You don't have a Cert Recode Now. Regist first."))
+
+def require(request):
+    sName = request.GET.get("Subject")
+    oName = request.GET.get("Object")
+    if sName == '' or oName == '' or sName == None or oName==None:
+        return HttpResponse(response_info(error_mToc["ERR_REQUIRE"],"Subject and Object segment Required!"))
+    for i in range(len(Cert.objects.all())):
+        if Cert.objects.all()[i].Subject == sName:
+            cert_info = {}
+            for j in range(len(Cert.objects.all())):
+                if Cert.objects.all()[j].Subject == oName:
+                    cert_info["SerialNumber"] = Cert.objects.all()[j].SerialNumber
+                    cert_info["Subject"] = Cert.objects.all()[j].Subject
+                    cert_info["PublicKey"] = Cert.objects.all()[j].PublicKey
+                    cert_info["PublicKeyAlgorithm"] = Cert.objects.all()[j].PublicKeyAlgorithm
+                    cert_info["Fingerprint"] = Cert.objects.all()[j].Fingerprint
+                    cert_info["FingerprintAlgorithm"] = Cert.objects.all()[j].FingerprintAlgorithm
+                    cert_info["ValidTo"] = Cert.objects.all()[j].ValidTo.strftime('%Y-%m-%d')
+                    cert_info["Signature"] = Cert.objects.all()[j].originSignature
+                    cert_info["SignatureAlgorithm"] = Cert.objects.all()[j].SignatureAlgorithm
+                    break
+            if cert_info == {}:
+                return  HttpResponse(response_info(error_mToc["ERR_REQUIRE"],"Invalid Object"))
+            return HttpResponse(response_info(error_mToc["SUCCESS"],json.dumps(cert_info)))
+    return HttpResponse(response_info(error_mToc["ERR_REQUIRE"],"Invalid Subject"))
+
+                    
+    

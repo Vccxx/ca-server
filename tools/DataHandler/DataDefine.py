@@ -11,7 +11,10 @@ error_cTom = {
    2: 'ERR_PUBLIC_KEY_DUP',
    3: 'ERR_SUBJECT_DUP',
    4: 'ERR_UNKNOWN',
-   5: 'ERR_SN_DUP'
+   5: 'ERR_SN_DUP',
+   6: 'ERR_UPDATE',
+   7: 'ERR_REVOKE',
+   8: 'ERR_REQUIRE'
 }
 
 error_mToc = dict(

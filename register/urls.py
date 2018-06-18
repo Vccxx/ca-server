@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'register',views.register, name='register'),
     url(r'update',views.update, name='update'),
     url(r'revoke',views.revoke, name='revoke'),
+    url(r'require',views.require, name='require'),
 ]
