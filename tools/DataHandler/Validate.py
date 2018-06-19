@@ -4,6 +4,7 @@ def is_validate(request):
     pubA = request.GET.get("PublicKeyAlgorithm")
     fig = request.GET.get("Fingerprint")
     figA = request.GET.get("FingerprintAlgorithm")
+    import ipdb;ipdb.set_trace()
     if sName == None or pub == None or pubA == None or fig == None or figA == None:
         return False
     if sName == "" or pub == "" or pubA == "" or fig == "" or figA == "":
